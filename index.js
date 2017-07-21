@@ -1,5 +1,5 @@
 /*eslint-disable */
-module.exports = function (onUpdate) {
+SpaceCMSClient = function (onUpdate) {
     ///todo: write a modal window on browser to illustrate loading of livereload
 
     var GLOBAL_VAR_NAME = "__spacecms_global";
@@ -12,7 +12,11 @@ module.exports = function (onUpdate) {
     try {
 
         //todo: transform to Promise format
-        var loadScript = function (url, callback) {
+        var loadScript = function (url,isAlreadyLoaded, callback) {
+            if (isAlreadyLoaded){
+                callback();
+                return;
+            }
 
             var script = document.createElement("script");
             script.type = "text/javascript";
@@ -35,13 +39,11 @@ module.exports = function (onUpdate) {
         };
 
 
-        //todo: check if already loaded already before attempting load
-        loadScript('//ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js', function () {
+        //todo: check correct versions have loaded for each library
 
-            if (typeof window.jQuery === "undefined") throw("jQuery failed to load");
-
-            loadScript('//cdn.bootcss.com/twig.js/0.8.9/twig.js', function onLoadTwig() {
-                loadScript('//cdnjs.cloudflare.com/ajax/libs/sails.io.js/1.1.10/sails.io.min.js', function onLoadSailsIo() {
+        loadScript('//ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js',typeof window.jQuery!=="undefined", function () {
+            loadScript('//cdn.bootcss.com/twig.js/0.8.9/twig.js', typeof window.twig!=="undefined"&&typeof window.twig==="function",function onLoadTwig() {
+                loadScript('//cdnjs.cloudflare.com/ajax/libs/sails.io.js/1.1.10/sails.io.min.js',typeof window.io!=="undefined"&&typeof window.io.sails!=="undefined", function onLoadSailsIo() {
 
                     var gn = GLOBAL_VAR_NAME;
 
@@ -54,7 +56,6 @@ module.exports = function (onUpdate) {
 
                     var API_URL = window[gn].config.api_url;
 
-                    var SPACE_UPDATE_COOLDOWN = window[gn].space_update_cooldown;
                     io.sails.url = API_URL;
 
                     var _spaceData = window[gn].space;
@@ -151,7 +152,7 @@ module.exports = function (onUpdate) {
                                     _spaceUpdateCooldownTimeout = setTimeout(function () {
                                         _spaceData[Space.data[0].uri_label] = Object.assign(_spaceData[Space.data[0].uri_label] || {}, Space.data[0].formData);
                                         _render();
-                                    }, SPACE_UPDATE_COOLDOWN);
+                                    }, window[gn].config.space_update_cooldown||0);
 
                                 });
 
@@ -164,13 +165,13 @@ module.exports = function (onUpdate) {
                         })
 
 
-                    });
+                    });//end jQuery.ready
 
-                });
+                });//end load io.sails
 
-            });
+            });//end load twig
 
-        });
+        });//end load jquery
 
 
     } catch (err) {
@@ -179,5 +180,12 @@ module.exports = function (onUpdate) {
 
 
 };
+
+if (typeof exports==="undefined"){
+    exports=this;
+    SpaceCMSClient();
+}else {
+    module.exports=SpaceCMSClient;
+}
 /*eslint-enable */
 
