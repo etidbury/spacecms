@@ -2,7 +2,9 @@
 module.exports = function (onUpdate) {
     ///todo: write a modal window on browser to illustrate loading of livereload
 
-    const throwError = function (err) {
+    var GLOBAL_VAR_NAME = "__spacecms_global";
+
+    var throwError = function (err) {
         console.error("CMS Live Reload Failure Occurred");
         console.trace("CMS Live Reload Error: ", err);
     };
@@ -10,9 +12,9 @@ module.exports = function (onUpdate) {
     try {
 
         //todo: transform to Promise format
-        const loadScript = function (url, callback) {
+        var loadScript = function (url, callback) {
 
-            let script = document.createElement("script");
+            var script = document.createElement("script");
             script.type = "text/javascript";
 
             if (script.readyState) { //IE
@@ -41,26 +43,28 @@ module.exports = function (onUpdate) {
             loadScript('//cdn.bootcss.com/twig.js/0.8.9/twig.js', function onLoadTwig() {
                 loadScript('//cdnjs.cloudflare.com/ajax/libs/sails.io.js/1.1.10/sails.io.min.js', function onLoadSailsIo() {
 
-                    const gn = '__etcms_global';
+                    var gn = GLOBAL_VAR_NAME;
 
                     if (!window[gn]) {
                         throwError("Global Variables not loaded");
                         return;
                     }
 
-                    const API_URL = window[gn].config.api_url;
 
-                    const SPACE_UPDATE_COOLDOWN = window[gn].space_update_cooldown;
+
+                    var API_URL = window[gn].config.api_url;
+
+                    var SPACE_UPDATE_COOLDOWN = window[gn].space_update_cooldown;
                     io.sails.url = API_URL;
 
-                    let _spaceData = window[gn].space;
-                    let _spaceUpdateCooldownTimeout;
+                    var _spaceData = window[gn].space;
+                    var _spaceUpdateCooldownTimeout;
 
                     jQuery(document).ready(function () {
 
-                        const $body = jQuery(window.document.body);
+                        var $body = jQuery(window.document.body);
 
-                        const template = twig({
+                        var template = twig({
                             id: "body",
                             //href: "templates/posts.twig",
                             // for this example we'll block until the template is loaded
@@ -73,17 +77,17 @@ module.exports = function (onUpdate) {
                              }*/
                         });
 
-                        let _previouslyRenderedSpaceData={};
+                        var _previouslyRenderedSpaceData={};
 
-                        const _render = function () {
+                        var _render = function () {
 
-                            const h = twig({ref: "body"}).render({space: _spaceData,md:Math.random()});
+                            var h = twig({ref: "body"}).render({space: _spaceData,md:Math.random()});
 
                             //console.log("_cms-livereload.js:_render (85)",h);//fordebug: debug print
 
                             $body[0].innerHTML=h;
 
-                            const $scripts=   jQuery('script:not([src],[id])',$body).detach();//avoid browsersync injection and ext. libraries
+                            var $scripts=   jQuery('script:not([src],[id])',$body).detach();//avoid browsersync injection and ext. libraries
 
 
                             $scripts.appendTo($body);
@@ -103,8 +107,8 @@ module.exports = function (onUpdate) {
 
                         };
 
-                        const mapSpacesArrayToAssoc = function (spacesArray) {
-                            const m = {};
+                        var mapSpacesArrayToAssoc = function (spacesArray) {
+                            var m = {};
 
                             spacesArray.forEach(function (space) {
 
