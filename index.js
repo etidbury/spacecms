@@ -65,7 +65,7 @@ SpaceCMSClient = function (onUpdate) {
 
                         var $body = jQuery(window.document.body);
 
-                        var template = twig({
+                        var bodyTemplate = twig({
                             id: "body",
                             //href: "templates/posts.twig",
                             // for this example we'll block until the template is loaded
@@ -82,9 +82,11 @@ SpaceCMSClient = function (onUpdate) {
 
                         var _render = function () {
 
-                            var h = twig({ref: "body"}).render({space: _spaceData,md:Math.random()});
+                            //var h = twig({ref: "body"}).render({space: _spaceData,md:Math.random()});
 
                             //console.log("_cms-livereload.js:_render (85)",h);//fordebug: debug print
+
+                            var h = bodyTemplate.render({space: _spaceData,md:Math.random()});
 
                             $body[0].innerHTML=h;
 
