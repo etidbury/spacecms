@@ -163,7 +163,7 @@ SpaceCMSClient = function (onUpdate) {
                                 });
 
                                 //return _render();
-                                return jQuery.ajax({method: 'GET', url: API_URL + 'project/' + project.id+'/spaces'});
+                                return jQuery.ajax({method: 'GET', url: API_URL + 'project/' + window[gn].project.name+'/spaces'});
 
 
                             }).then(function(updatedSpaceData){
