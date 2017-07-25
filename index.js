@@ -154,6 +154,7 @@ SpaceCMSClient = function (onUpdate) {
 
                                 io.socket.on('space', function onSpaceUpdate(Space) {
 
+
                                     clearTimeout(_spaceUpdateCooldownTimeout);
                                     _spaceUpdateCooldownTimeout = setTimeout(function () {
                                         _spaceData[Space.data[0].uri_label] = Object.assign(_spaceData[Space.data[0].uri_label] || {}, Space.data[0].formData);
