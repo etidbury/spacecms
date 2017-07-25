@@ -105,6 +105,10 @@ SpaceCMSClient = function (onUpdate) {
 
                             _previouslyRenderedSpaceData=_spaceData;
 
+
+                            window.dispatchEvent(new CustomEvent('spacecms:update',_spaceData));
+
+
                             if (typeof onUpdate==="function")
                                 onUpdate(_spaceData);
 
