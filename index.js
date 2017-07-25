@@ -1,7 +1,7 @@
 /*eslint-disable */
 SpaceCMSClient = function (onUpdate) {
     ///todo: write a modal window on browser to illustrate loading of livereload
-
+    ///todo: add handler when injecting this library more than once. i.e. when user imports library in their react project
     var GLOBAL_VAR_NAME = "__spacecms_global";
 
     var throwError = function (err) {
