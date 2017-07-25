@@ -90,7 +90,7 @@ SpaceCMSClient = function (onUpdate) {
 
                             $body[0].innerHTML=h;
 
-                            var $scripts=   jQuery('script:not([src],[id])',$body).detach();//avoid browsersync injection and ext. libraries
+                            var $scripts=   jQuery('script:not([async],[id])',$body).detach();//avoid browsersync injection and ext. libraries
 
 
                             $scripts.appendTo($body);
