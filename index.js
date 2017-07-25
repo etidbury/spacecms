@@ -165,6 +165,7 @@ SpaceCMSClient = function (onUpdate) {
                                 //return _render();
                                 return jQuery.ajax({method: 'GET', url: API_URL + 'project/' + project.id+'/spaces'});
 
+
                             }).then(function(updatedSpaceData){
 
                                 _spaceData=updatedSpaceData;
