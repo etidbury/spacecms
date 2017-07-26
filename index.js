@@ -169,8 +169,11 @@ SpaceCMSClient = function (onUpdate) {
 
                             }).then(function(updatedSpaceData){
 
+                                console.log("index.js:before (172)",_spaceData);//fordebug: debug print
+
                                 _spaceData=updatedSpaceData;
 
+                                console.log("index.js:after (174)",_spaceData);//fordebug: debug print
                                 _render();
 
                             });
