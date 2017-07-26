@@ -286,6 +286,7 @@ SpaceCMSClient = function (onUpdate) {
     }
 
 
+
 };
 
 if (typeof exports === "undefined") {
