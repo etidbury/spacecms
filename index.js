@@ -174,7 +174,7 @@ SpaceCMSClient = function (onUpdate) {
 
                                 console.log("index.js:before (172)",_spaceData);//fordebug: debug print
 
-                                _spaceData=updatedSpaceData;
+                                _spaceData=mapSpacesArrayToAssoc(updatedSpaceData);
 
                                 console.log("index.js:after (174)",_spaceData);//fordebug: debug print
 
