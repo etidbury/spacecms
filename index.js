@@ -131,10 +131,10 @@ SpaceCMSClient = function (onUpdate) {
 
                     if (window.location.host.indexOf(".firepit.tech") > -1) {
 
-                        var stagingProjectName = /\/p\/(.*)\//.exec(window.location.href)[1];
+                        var stagingProjectName = /\/p\/(.*)\//.exec(window.location.href)[1].replace(/\//g, '');
 
-                        window[gn].project={
-                            name:stagingProjectName
+                        window[gn].project = {
+                            name: stagingProjectName
                         };
 
                     }
