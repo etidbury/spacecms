@@ -126,20 +126,38 @@ SpaceCMSClient = function (onUpdate) {
                         return;
                     }
 
-                    /*------quickfix: override configuration set by gulplite when in staging environment------*/
+                    /*------quickfix: override configuration set by gulplite when using querystring------*/
                     //todo: improve and add better fix than current quickfix for setting configuration for staging env.
 
-                    if (window.location.host.indexOf(".firepit.tech") > -1) {
+                    //if (window.location.host.indexOf(".firepit.tech") > -1) {
 
-                        var stagingProjectName = /\/p\/(.*)\//.exec(window.location.href)[1].replace(/\//g, '');
 
+                    var getParameterByName=function(name, url) {
+                        if (!url) url = window.location.href;
+                        name = name.replace(/[\[\]]/g, "\\$&");
+                        var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+                            results = regex.exec(url);
+                        if (!results) return null;
+                        if (!results[2]) return '';
+                        return decodeURIComponent(results[2].replace(/\+/g, " "));
+                    };
+
+
+                    var stagingProjectName = getParameterByName('project');
+                    //var stagingProjectName = /\/p\/(.*)\//.exec("http://staging.firepit.tech.dev/p/boilerplate/?gelll=hello#/")[1].replace(/\//g, '');
+
+                    if (stagingProjectName&&stagingProjectName!==null){//if querystring is set
                         window[gn].project = {
                             name: stagingProjectName
                         };
-
                     }
 
-                    /*------/quickfix: override configuration set by gulplite when in staging environment------*/
+
+
+                    //}
+
+
+                    /*------/quickfix: override configuration set by gulplite when using querystring------*/
 
 
                     var API_URL = window[gn].config.api_url;
