@@ -126,6 +126,21 @@ SpaceCMSClient = function (onUpdate) {
                         return;
                     }
 
+                    /*------quickfix: override configuration set by gulplite when in staging environment------*/
+                    //todo: improve and add better fix than current quickfix for setting configuration for staging env.
+
+                    if (window.location.host.indexOf(".firepit.tech") > -1) {
+
+                        var stagingProjectName = /\/p\/(.*)\//.exec(window.location.href)[1];
+
+                        window[gn].project={
+                            name:stagingProjectName
+                        };
+
+                    }
+
+                    /*------/quickfix: override configuration set by gulplite when in staging environment------*/
+
 
                     var API_URL = window[gn].config.api_url;
 
@@ -284,7 +299,6 @@ SpaceCMSClient = function (onUpdate) {
     } catch (err) {
         throwError(err);
     }
-
 
 
 };
