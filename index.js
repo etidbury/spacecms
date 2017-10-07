@@ -154,6 +154,25 @@ SpaceCMSClient = function (onUpdate) {
 
 
 
+                    var stagingAPIURL = getParameterByName('api_url');
+                    //var stagingProjectName = /\/p\/(.*)\//.exec("http://staging.firepit.tech.dev/p/boilerplate/?gelll=hello#/")[1].replace(/\//g, '');
+
+                    if (stagingAPIURL&&stagingAPIURL!==null){//if querystring is set
+
+                        if (!window[gn].config)
+                            window[gn].config={};
+
+
+                        window[gn].config.api_url=stagingAPIURL;
+
+
+                        window[gn].project = {
+                            name: stagingProjectName
+                        };
+                    }
+
+
+
                     //}
 
 
