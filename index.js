@@ -217,19 +217,9 @@ SpaceCMSClient = function (onUpdate) {
 
                             var $scripts = jQuery('script:not([async],[id])', $body).detach();//avoid browsersync injection and ext. libraries
 
-
-                            //
-                            // $scripts.appendTo('body');
-
-                            //$body.append($scripts);
-
-                            console.log("index.js:zzzzzzzzzz (102)", window[gn].space.quiz_theme.background_color.value);//fordebug: debug print
-
                             window[gn].space = _spaceData;
 
                             window['_space'] = _spaceData;
-
-                            console.log("index.js:yyyyyyyyyy (102)", window[gn].space.quiz_theme.background_color.value);//fordebug: debug print
 
 
                             console.log("index.js:render (105)", _spaceData);//fordebug: debug print
