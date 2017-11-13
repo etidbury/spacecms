@@ -146,6 +146,7 @@ SpaceCMSClient = function (onUpdate) {
                     var stagingProjectName = getParameterByName('project');
                     //var stagingProjectName = /\/p\/(.*)\//.exec("http://staging.firepit.tech.dev/p/boilerplate/?gelll=hello#/")[1].replace(/\//g, '');
 
+
                     if (stagingProjectName&&stagingProjectName!==null){//if querystring is set
                         window[gn].project = {
                             name: stagingProjectName
@@ -210,6 +211,8 @@ SpaceCMSClient = function (onUpdate) {
                             //var h = twig({ref: "body"}).render({space: _spaceData,md:Math.random()});
 
                             //console.log("_cms-livereload.js:_render (85)",h);//fordebug: debug print
+
+                            _spaceData=Object.assign({},_spaceData);
 
                             var h = bodyTemplate.render({space: _spaceData, md: Math.random()});
 
