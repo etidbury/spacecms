@@ -184,7 +184,9 @@ SpaceCMSClient = function (onUpdate) {
 
                     var API_URL = window[gn].config.api_url;
 
-                    io.sails.url = API_URL;
+                    //io.sails.url = API_URL;
+
+                    const socket=io('http://localhost:4088', {path: '/api/v1/'});
 
                     var _spaceData = window[gn].space;
                     var _spaceUpdateCooldownTimeout;
@@ -274,7 +276,7 @@ SpaceCMSClient = function (onUpdate) {
 
                                 spaces.forEach(function (space) {
                                     //_spaceData[space.uri_label] = Object.assign(_spaceData[space.uri_label] || {}, space.formData);
-                                    io.socket.get(API_PREFIX+'space/' + space.uri_label + '/subscribe');
+                                    socket.get(API_PREFIX+'space/' + space.uri_label + '/subscribe');
                                 });
 
                                 _spaceData = mapSpacesArrayToAssoc(spaces);
@@ -283,7 +285,7 @@ SpaceCMSClient = function (onUpdate) {
 
                             }).then(function () {
 
-                                io.socket.on('space', function onSpaceUpdate(Space) {
+                                socket.on('space', function onSpaceUpdate(Space) {
 
 
                                     clearTimeout(_spaceUpdateCooldownTimeout);
