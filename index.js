@@ -4,6 +4,8 @@ SpaceCMSClient = function (onUpdate) {
     ///todo: add handler when injecting this library more than once. i.e. when user imports library in their react project
     var GLOBAL_VAR_NAME = "__spacecms_global";
 
+    var API_PREFIX = "/api/v1/";
+
     var throwError = function (err) {
         console.error("CMS Live Reload Failure Occurred");
         console.trace("CMS Live Reload Error: ", err);
@@ -272,7 +274,7 @@ SpaceCMSClient = function (onUpdate) {
 
                                 spaces.forEach(function (space) {
                                     //_spaceData[space.uri_label] = Object.assign(_spaceData[space.uri_label] || {}, space.formData);
-                                    io.socket.get('/space/' + space.uri_label + '/subscribe');
+                                    io.socket.get(API_PREFIX+'space/' + space.uri_label + '/subscribe');
                                 });
 
                                 _spaceData = mapSpacesArrayToAssoc(spaces);
