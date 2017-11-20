@@ -11,6 +11,29 @@ SpaceCMSClient = function (onUpdate) {
         console.trace("CMS Live Reload Error: ", err);
     };
 
+
+    /*----extract host name----*/
+    function extractHostname(url) {
+        var hostname;
+        //find & remove protocol (http, ftp, etc.) and get hostname
+
+        if (url.indexOf("://") > -1) {
+            hostname = url.split('/')[2];
+        }
+        else {
+            hostname = url.split('/')[0];
+        }
+
+        //find & remove port number
+        hostname = hostname.split(':')[0];
+        //find & remove "?"
+        hostname = hostname.split('?')[0];
+
+        return hostname;
+    }
+
+    /*---/extract host name----*/
+
     try {
 
         /*------deepmerge----*/
@@ -117,6 +140,9 @@ SpaceCMSClient = function (onUpdate) {
 
         //todo: check correct versions have loaded for each library
 
+        /*--show loading--*/
+
+
         loadScript('//ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js', typeof window.jQuery !== "undefined", function () {
             loadScript('//cdn.bootcss.com/twig.js/0.8.9/twig.js', typeof window.twig !== "undefined" && typeof window.twig === "function", function onLoadTwig() {
                 loadScript('//cdnjs.cloudflare.com/ajax/libs/sails.io.js/1.1.10/sails.io.min.js', typeof window.io !== "undefined" && typeof window.io.sails !== "undefined", function onLoadSailsIo() {
@@ -128,13 +154,14 @@ SpaceCMSClient = function (onUpdate) {
                         return;
                     }
 
+
                     /*------quickfix: override configuration set by gulplite when using querystring------*/
                     //todo: improve and add better fix than current quickfix for setting configuration for staging env.
 
                     //if (window.location.host.indexOf(".firepit.tech") > -1) {
 
 
-                    var getParameterByName=function(name, url) {
+                    var getParameterByName = function (name, url) {
                         if (!url) url = window.location.href;
                         name = name.replace(/[\[\]]/g, "\\$&");
                         var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
@@ -149,31 +176,29 @@ SpaceCMSClient = function (onUpdate) {
                     //var stagingProjectName = /\/p\/(.*)\//.exec("http://staging.firepit.tech.dev/p/boilerplate/?gelll=hello#/")[1].replace(/\//g, '');
 
 
-                    if (stagingProjectName&&stagingProjectName!==null){//if querystring is set
+                    if (stagingProjectName && stagingProjectName !== null) {//if querystring is set
                         window[gn].project = {
                             name: stagingProjectName
                         };
                     }
-
 
 
                     var stagingAPIURL = getParameterByName('api_url');
                     //var stagingProjectName = /\/p\/(.*)\//.exec("http://staging.firepit.tech.dev/p/boilerplate/?gelll=hello#/")[1].replace(/\//g, '');
 
-                    if (stagingAPIURL&&stagingAPIURL!==null){//if querystring is set
+                    if (stagingAPIURL && stagingAPIURL !== null) {//if querystring is set
 
                         if (!window[gn].config)
-                            window[gn].config={};
+                            window[gn].config = {};
 
 
-                        window[gn].config.api_url=stagingAPIURL;
+                        window[gn].config.api_url = stagingAPIURL;
 
 
                         window[gn].project = {
                             name: stagingProjectName
                         };
                     }
-
 
 
                     //}
@@ -184,9 +209,19 @@ SpaceCMSClient = function (onUpdate) {
 
                     var API_URL = window[gn].config.api_url;
 
-                    //io.sails.url = API_URL;
 
-                    const socket=io('http://localhost:4088', {path: '/api/v1/'});
+                    var hostName = extractHostname(API_URL);
+                    console.log("index.js[214]:",);//fordebug: print debug
+
+
+                    if (hostName === "localhost") {
+                        io.sails.url = "//"+extractHostname(API_URL)+":4088/";
+                    } else {
+                        io.sails.url = "//" + extractHostname(API_URL);
+                    }
+
+
+                    //var socket=io('http://localhost:4088');
 
                     var _spaceData = window[gn].space;
                     var _spaceUpdateCooldownTimeout;
@@ -194,6 +229,7 @@ SpaceCMSClient = function (onUpdate) {
                     jQuery(document).ready(function () {
 
                         var $body = jQuery(window.document.body);
+
 
                         var bodyTemplate = twig({
                             id: "body",
@@ -216,7 +252,7 @@ SpaceCMSClient = function (onUpdate) {
 
                             //console.log("_cms-livereload.js:_render (85)",h);//fordebug: debug print
 
-                            _spaceData=Object.assign({},_spaceData);
+                            _spaceData = Object.assign({}, _spaceData);
 
                             var h = bodyTemplate.render({space: _spaceData, md: Math.random()});
 
@@ -238,6 +274,13 @@ SpaceCMSClient = function (onUpdate) {
 
                             window.dispatchEvent(new CustomEvent('spacecms:update', {detail: _spaceData}));
 
+                            try {
+
+                                window.document.getElementById("cms-loading-dialog").style.display = "none";
+
+                            }catch (err){
+                                console.error("Failed to remove CMS loading dialog",err);//fordebug: print debug
+                            }
 
                             if (typeof onUpdate === "function")
                                 onUpdate(_spaceData);
@@ -276,7 +319,7 @@ SpaceCMSClient = function (onUpdate) {
 
                                 spaces.forEach(function (space) {
                                     //_spaceData[space.uri_label] = Object.assign(_spaceData[space.uri_label] || {}, space.formData);
-                                    socket.get(API_PREFIX+'space/' + space.uri_label + '/subscribe');
+                                    io.socket.get(API_PREFIX + 'space/' + space.uri_label + '/subscribe');
                                 });
 
                                 _spaceData = mapSpacesArrayToAssoc(spaces);
@@ -285,7 +328,7 @@ SpaceCMSClient = function (onUpdate) {
 
                             }).then(function () {
 
-                                socket.on('space', function onSpaceUpdate(Space) {
+                                io.socket.on('space', function onSpaceUpdate(Space) {
 
 
                                     clearTimeout(_spaceUpdateCooldownTimeout);
@@ -328,6 +371,9 @@ SpaceCMSClient = function (onUpdate) {
             });//end load twig
 
         });//end load jquery
+
+
+        /*-/show loading--*/
 
 
     } catch (err) {
