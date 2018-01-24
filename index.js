@@ -387,7 +387,7 @@ if (typeof exports === "undefined") {
     exports = this;
     SpaceCMSClient();
 } else {
-    module.exports = SpaceCMSClient;
+    exports = SpaceCMSClient;
 }
 /*eslint-enable */
 
