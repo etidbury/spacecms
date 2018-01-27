@@ -215,7 +215,7 @@ SpaceCMSClient = function (onUpdate) {
 
 
                     if (hostName === "localhost") {
-                        io.sails.url = "//"+extractHostname(API_URL)+":4088/";
+                        io.sails.url = "//" + extractHostname(API_URL) + ":4088/";
                     } else {
                         io.sails.url = "//" + extractHostname(API_URL);
                     }
@@ -278,8 +278,8 @@ SpaceCMSClient = function (onUpdate) {
 
                                 window.document.getElementById("cms-loading-dialog").style.display = "none";
 
-                            }catch (err){
-                                console.error("Failed to remove CMS loading dialog",err);//fordebug: print debug
+                            } catch (err) {
+                                console.error("Failed to remove CMS loading dialog", err);//fordebug: print debug
                             }
 
                             if (typeof onUpdate === "function")
@@ -301,76 +301,51 @@ SpaceCMSClient = function (onUpdate) {
 
                         //$body.html('Loading Dev Environment...');
 
+
                         jQuery.ajax({
                             method: 'GET',
-                            url: API_URL + 'project/?uri_label=' + window[gn].project.name
-                        }).then(function (data) {
+                            url: API_URL + 'project/' + window[gn].project.name + '/spaces'
+                        }).then(function (spaces) {
 
-                            return data[0];
-
-                        }).then(function (project) {
-
-                            project = project[0];
-
-                            return jQuery.ajax({
-                                method: 'GET',
-                                url: API_URL + 'space/?project=' + project.id
-                            }).then(function (spaces, r, s) {
-
-                                spaces.forEach(function (space) {
-                                    //_spaceData[space.uri_label] = Object.assign(_spaceData[space.uri_label] || {}, space.formData);
-                                    io.socket.get(API_PREFIX + 'space/' + space.uri_label + '/subscribe');
-                                });
-
-                                _spaceData = mapSpacesArrayToAssoc(spaces);
-
-                                return true;
-
-                            }).then(function () {
-
-                                io.socket.on('space', function onSpaceUpdate(Space) {
-
-
-                                    clearTimeout(_spaceUpdateCooldownTimeout);
-                                    _spaceUpdateCooldownTimeout = setTimeout(function () {
-                                        _spaceData[Space.data[0].uri_label] = Object.assign(_spaceData[Space.data[0].uri_label] || {}, Space.data[0].formData);
-                                        _render();
-                                    }, window[gn].config.space_update_cooldown || 0);
-
-                                });
-
-                                //return _render();
-                                return jQuery.ajax({
-                                    method: 'GET',
-                                    url: API_URL + 'project/' + window[gn].project.name + '/spaces'
-                                });
-
-
-                            }).then(function (updatedSpaceData) {
-
-                                console.log("index.js:before (172)", _spaceData);//fordebug: debug print
-
-                                _spaceData = mapSpacesArrayToAssoc(updatedSpaceData);
-
-                                console.log("index.js:after (174)", _spaceData);//fordebug: debug print
-
-                                _render();
-
+                            Object.keys(spaces).forEach(function(spaceURILabel){
+                                io.socket.get(API_PREFIX + 'space/' + spaceURILabel + '/subscribe');
                             });
-                            //todo: add error handling
+
+                            _spaceData = spaces;
+
+                            return true;
 
                         }).then(function () {
-                            //complete
-                        })
+
+                            io.socket.on('space', function onSpaceUpdate(Space) {
 
 
-                    });//end jQuery.ready
+                                clearTimeout(_spaceUpdateCooldownTimeout);
+                                _spaceUpdateCooldownTimeout = setTimeout(function () {
+                                    _spaceData[Space.data[0].uri_label] = Object.assign(_spaceData[Space.data[0].uri_label] || {}, Space.data[0].formData);
+                                    _render();
+                                }, window[gn].config.space_update_cooldown || 0);
 
-                });//end load io.sails
+                            });
 
-            });//end load twig
+                           /* //return _render();
+                            return jQuery.ajax({
+                                method: 'GET',
+                                url: API_URL + 'project/' + window[gn].project.name + '/spaces'
+                            });*/
+                            _render();
 
-        });//end load jquery
+                        });
+                        //todo: add error handling
+
+                    });
+
+
+                });//end jQuery.ready
+
+            });//end load io.sails
+
+        });//end load twig
 
 
         /*-/show loading--*/
