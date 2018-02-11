@@ -307,38 +307,45 @@ SpaceCMSClient = function (onUpdate) {
                         //$body.html('Loading Dev Environment...');
 
 
-                        jQuery.ajax({
-                            method: 'GET',
-                            url: API_URL + 'project/' + window[gn].project.name + '/spaces'
-                        }).then(function (spaces) {
-
-                            Object.keys(spaces).forEach(function(spaceURILabel){
-                                io.socket.get(API_PREFIX + 'space/' + spaceURILabel + '/subscribe');
-                            });
-
-                            _spaceData = spaces;
-
-                            return true;
-
-                        }).then(function () {
-
-                            io.socket.on('space', function onSpaceUpdate(Space) {
+                        io.socket.on('connect',function(){
 
 
-                                clearTimeout(_spaceUpdateCooldownTimeout);
-                                _spaceUpdateCooldownTimeout = setTimeout(function () {
-                                    _spaceData[Space.data[0].uri_label] = Object.assign(_spaceData[Space.data[0].uri_label] || {}, Space.data[0].formData);
-                                    _render();
-                                }, window[gn].config.space_update_cooldown || 0);
 
-                            });
-
-                           /* //return _render();
-                            return jQuery.ajax({
+                            jQuery.ajax({
                                 method: 'GET',
                                 url: API_URL + 'project/' + window[gn].project.name + '/spaces'
-                            });*/
-                            _render();
+                            }).then(function (spaces)
+                            {
+
+                                Object.keys(spaces).forEach(function(spaceURILabel){
+                                    io.socket.get(API_PREFIX + 'space/' + spaceURILabel + '/subscribe');
+                                });
+
+                                _spaceData = spaces;
+
+                                return true;
+
+                            }).then(function () {
+
+                                io.socket.on('space', function onSpaceUpdate(Space) {
+
+
+                                    clearTimeout(_spaceUpdateCooldownTimeout);
+                                    _spaceUpdateCooldownTimeout = setTimeout(function () {
+                                        _spaceData[Space.data[0].uri_label] = Object.assign(_spaceData[Space.data[0].uri_label] || {}, Space.data[0].formData);
+                                        _render();
+                                    }, window[gn].config.space_update_cooldown || 0);
+
+                                });
+
+                               /* //return _render();
+                                return jQuery.ajax({
+                                    method: 'GET',
+                                    url: API_URL + 'project/' + window[gn].project.name + '/spaces'
+                                });*/
+                                _render();
+
+                            });
 
                         });
                         //todo: add error handling
