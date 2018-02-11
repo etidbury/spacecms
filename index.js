@@ -220,6 +220,11 @@ SpaceCMSClient = function (onUpdate) {
                         io.sails.url = "//" + extractHostname(API_URL);
                     }
 
+                    io.socket.on('disconnect',()=>{
+                        //https://stackoverflow.com/questions/41400510/sails-socket-wont-reconnect
+                        io.socket._raw.io._reconnection = true;
+                    });
+
 
                     //var socket=io('http://localhost:4088');
 
