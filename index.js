@@ -211,7 +211,6 @@ SpaceCMSClient = function (onUpdate) {
 
 
                     var hostName = extractHostname(API_URL);
-                    console.log("index.js[214]:",);//fordebug: print debug
 
 
                     if (hostName === "localhost") {
@@ -219,6 +218,9 @@ SpaceCMSClient = function (onUpdate) {
                     } else {
                         io.sails.url = "//" + extractHostname(API_URL);
                     }
+
+                    io.connect(io.sails.url);
+
 
                     io.socket.on('disconnect',()=>{
                         //https://stackoverflow.com/questions/41400510/sails-socket-wont-reconnect
@@ -317,9 +319,9 @@ SpaceCMSClient = function (onUpdate) {
                             }).then(function (spaces)
                             {
 
-                                Object.keys(spaces).forEach(function(spaceURILabel){
+                                /*Object.keys(spaces).forEach(function(spaceURILabel){
                                     io.socket.get(API_PREFIX + 'space/' + spaceURILabel + '/subscribe');
-                                });
+                                });*/
 
                                 _spaceData = spaces;
 
@@ -327,7 +329,9 @@ SpaceCMSClient = function (onUpdate) {
 
                             }).then(function () {
 
-                                io.socket.on('space', function onSpaceUpdate(Space) {
+
+
+                                /*io.socket.on('space', function onSpaceUpdate(Space) {
 
 
                                     clearTimeout(_spaceUpdateCooldownTimeout);
@@ -336,6 +340,16 @@ SpaceCMSClient = function (onUpdate) {
                                         _render();
                                     }, window[gn].config.space_update_cooldown || 0);
 
+                                });*/
+
+                                io.socket.on('/project/'+window[gn].project.name +'/space/form/update',function(obj){
+                                    console.log("index.js[344]:",obj);//fordebug: print debug
+                                    clearTimeout(_spaceUpdateCooldownTimeout);
+
+                                    _spaceUpdateCooldownTimeout = setTimeout(function () {
+                                        _spaceData[obj.uri_label] = Object.assign(_spaceData[obj.uri_label]  || {}, obj.formData);
+                                        _render();
+                                    }, window[gn].config.space_update_cooldown || 0);
                                 });
 
                                /* //return _render();
